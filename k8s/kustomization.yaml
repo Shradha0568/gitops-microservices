@@ -1,0 +1,5 @@
+resources:
+  - service-a/deployment.yaml
+  - service-a/service.yaml
+  - service-b/deployment.yaml
+  - service-b/service.yaml
