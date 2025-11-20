@@ -17,5 +17,5 @@ spec:
         - name: service-b
           image: shradha91103/service-b:latest
           ports:
-            - containerPort: 5000
+            - containerPort: 5001
 
