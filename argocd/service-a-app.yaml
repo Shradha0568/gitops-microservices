@@ -1,0 +1,19 @@
+apiVersion: argoproj.io/v1alpha1
+kind: Application
+metadata:
+  name: service-a
+  namespace: argocd
+spec:
+  project: default
+  source:
+    repoURL: "https://github.com/shradha0568/gitops-microservices.git"
+    path: k8s/service-a
+    targetRevision: main
+  destination:
+    server: "https://kubernetes.default.svc"
+    namespace: default
+  syncPolicy:
+    automated:
+      prune: true
+      selfHeal: true
+
