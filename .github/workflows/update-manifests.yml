@@ -1,0 +1,32 @@
+name: Update Manifests
+
+on:
+  workflow_run:
+    workflows:
+      - "Build and Push Service A"
+      - "Build and Push Service B"
+    types:
+      - completed
+
+jobs:
+  update:
+    runs-on: ubuntu-latest
+    permissions:
+      contents: write
+
+    steps:
+      - uses: actions/checkout@v3
+
+      - name: Update Image Tag (latest)
+        run: |
+          sed -i 's/latest/latest/g' k8s/service-a/deployment.yaml
+          sed -i 's/latest/latest/g' k8s/service-b/deployment.yaml
+
+      - name: Commit changes
+        run: |
+          git config user.email "github-actions@github.com"
+          git config user.name "GitHub Actions"
+          git add .
+          git commit -m "Updated image tag" || echo "No changes to commit"
+          git push
+
