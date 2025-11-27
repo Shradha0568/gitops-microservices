@@ -3,7 +3,7 @@ app = Flask(__name__)
 
 @app.route("/")
 def home():
-    return "Hello from Service B changed some thing"
+    return "Hello from Service B changed some thing for cheking"
 
 if __name__ == "__main__":
     app.run(host="0.0.0.0", port=5001)
