@@ -17,5 +17,5 @@ spec:
         - name: service-a
           image: shradha91103/service-a:latest
           ports:
-            - containerPort: 5000
+            - containerPort: 80
 

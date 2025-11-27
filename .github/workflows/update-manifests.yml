@@ -15,18 +15,26 @@ jobs:
       contents: write
 
     steps:
-      - uses: actions/checkout@v3
+      - name: Checkout repo
+        uses: actions/checkout@v3
 
-      - name: Update Image Tag (latest)
+      - name: Update image tag with timestamp
         run: |
-          sed -i 's/latest/latest/g' k8s/service-a/deployment.yaml
-          sed -i 's/latest/latest/g' k8s/service-b/deployment.yaml
+          TAG=$(date +%s)
+
+          echo "New TAG: $TAG"
+
+          # Replace service-a image tag
+          sed -i "s#shradha91103/service-a:.*#shradha91103/service-a:$TAG#g" k8s/service-a/deployment.yaml
+
+          # Replace service-b image tag
+          sed -i "s#shradha91103/service-b:.*#shradha91103/service-b:$TAG#g" k8s/service-b/deployment.yaml
 
       - name: Commit changes
         run: |
           git config user.email "github-actions@github.com"
           git config user.name "GitHub Actions"
           git add .
-          git commit -m "Updated image tag" || echo "No changes to commit"
+          git commit -m "Updated image tag to $TAG" || echo "No changes to commit"
           git push
 

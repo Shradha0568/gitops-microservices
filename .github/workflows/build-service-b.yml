@@ -12,11 +12,18 @@ jobs:
     steps:
       - uses: actions/checkout@v3
 
+      - name: Set IMAGE_TAG to commit SHA
+        run: echo "IMAGE_TAG=$(git rev-parse --short HEAD)" >> $GITHUB_ENV
+
       - name: Docker Login
         run: echo "${{ secrets.DOCKER_PASSWORD }}" | docker login -u ${{ secrets.DOCKER_USERNAME }} --password-stdin
 
-      - name: Build & Push
+      - name: Build & Push Service B
         run: |
-          docker build -t shradha91103/service-b:latest service-b
+          docker build -t shradha91103/service-b:${IMAGE_TAG} service-b
+          docker push shradha91103/service-b:${IMAGE_TAG}
+
+          # Also push :latest if you want
+          docker tag shradha91103/service-b:${IMAGE_TAG} shradha91103/service-b:latest
           docker push shradha91103/service-b:latest
 
