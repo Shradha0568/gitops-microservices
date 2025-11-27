@@ -18,23 +18,18 @@ jobs:
       - name: Checkout repo
         uses: actions/checkout@v3
 
-      - name: Update image tag with timestamp
+      - name: Update deployment to use latest tag
         run: |
-          TAG=$(date +%s)
+          # Service A
+          sed -i "s#image: shradha91103/service-a:.*#image: shradha91103/service-a:latest#g" k8s/service-a/deployment.yaml
+          # Service B
+          sed -i "s#image: shradha91103/service-b:.*#image: shradha91103/service-b:latest#g" k8s/service-b/deployment.yaml
 
-          echo "New TAG: $TAG"
-
-          # Replace service-a image tag
-          sed -i "s#shradha91103/service-a:.*#shradha91103/service-a:$TAG#g" k8s/service-a/deployment.yaml
-
-          # Replace service-b image tag
-          sed -i "s#shradha91103/service-b:.*#shradha91103/service-b:$TAG#g" k8s/service-b/deployment.yaml
-
-      - name: Commit changes
+      - name: Commit and Push
         run: |
           git config user.email "github-actions@github.com"
           git config user.name "GitHub Actions"
           git add .
-          git commit -m "Updated image tag to $TAG" || echo "No changes to commit"
+          git commit -m "Update deployment images to latest" || echo "No changes to commit"
           git push
 

@@ -8,21 +8,12 @@ on:
 jobs:
   build:
     runs-on: ubuntu-latest
-
     steps:
       - uses: actions/checkout@v3
-
-      - name: Set IMAGE_TAG to commit SHA
-        run: echo "IMAGE_TAG=$(git rev-parse --short HEAD)" >> $GITHUB_ENV
-
       - name: Docker Login
         run: echo "${{ secrets.DOCKER_PASSWORD }}" | docker login -u ${{ secrets.DOCKER_USERNAME }} --password-stdin
-
-      - name: Build & Push Service A
+      - name: Build & Push
         run: |
-          docker build -t shradha91103/service-a:${IMAGE_TAG} service-a
-          docker push shradha91103/service-a:${IMAGE_TAG}
-
-          docker tag shradha91103/service-a:${IMAGE_TAG} shradha91103/service-a:latest
+          docker build -t shradha91103/service-a:latest service-a
           docker push shradha91103/service-a:latest
 
