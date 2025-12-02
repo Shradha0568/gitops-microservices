@@ -12,10 +12,13 @@ spec:
     metadata:
       labels:
         app: service-b
+      annotations:
+        argocd-image-updater.argoproj.io/image-list: "shradha91103/service-b"
     spec:
       containers:
         - name: service-b
           image: shradha91103/service-b:latest
+          imagePullPolicy: IfNotPresent
           ports:
             - containerPort: 5001
 

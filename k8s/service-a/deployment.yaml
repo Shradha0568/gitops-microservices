@@ -12,10 +12,14 @@ spec:
     metadata:
       labels:
         app: service-a
+      annotations:
+        # useful if later you want to enable argocd-image-updater
+        argocd-image-updater.argoproj.io/image-list: "shradha91103/service-a"
     spec:
       containers:
         - name: service-a
           image: shradha91103/service-a:latest
+          imagePullPolicy: IfNotPresent
           ports:
             - containerPort: 80
 

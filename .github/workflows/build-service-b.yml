@@ -1,19 +1,50 @@
-name: Build and Push Service B
+name: Build, Tag & Push Service B
 
 on:
   push:
     paths:
       - "service-b/**"
 
+permissions:
+  contents: write
+
 jobs:
-  build:
+  build-and-update:
     runs-on: ubuntu-latest
+    env:
+      IMAGE_REPO: shradha91103/service-b
     steps:
-      - uses: actions/checkout@v3
+      - name: Checkout
+        uses: actions/checkout@v3
+        with:
+          persist-credentials: true
+
+      - name: Set up QEMU (optional)
+        uses: docker/setup-qemu-action@v2
+
+      - name: Set up Buildx
+        uses: docker/setup-buildx-action@v2
+
       - name: Docker Login
-        run: echo "${{ secrets.DOCKER_PASSWORD }}" | docker login -u ${{ secrets.DOCKER_USERNAME }} --password-stdin
-      - name: Build & Push
+        run: echo "${{ secrets.DOCKER_PASSWORD }}" | docker login -u "${{ secrets.DOCKER_USERNAME }}" --password-stdin
+
+      - name: Set IMAGE_TAG (short sha)
+        run: echo "IMAGE_TAG=$(echo $GITHUB_SHA | cut -c1-7)" >> $GITHUB_ENV
+
+      - name: Build and push image (sha tag + latest)
         run: |
-          docker build -t shradha91103/service-b:latest service-b
-          docker push shradha91103/service-b:latest
+          docker build -t $IMAGE_REPO:${IMAGE_TAG} service-b
+          docker push $IMAGE_REPO:${IMAGE_TAG}
+          docker tag $IMAGE_REPO:${IMAGE_TAG} $IMAGE_REPO:latest
+          docker push $IMAGE_REPO:latest
+
+      - name: Update k8s deployment image tag
+        run: |
+          echo "Updating k8s/service-b/deployment.yaml to use ${IMAGE_REPO}:${IMAGE_TAG}"
+          sed -i -E "s#(image:\s*${IMAGE_REPO}:).*#\\1${IMAGE_TAG}#g" k8s/service-b/deployment.yaml || true
+          git config user.email "github-actions@github.com"
+          git config user.name "GitHub Actions"
+          git add k8s/service-b/deployment.yaml
+          git commit -m "ci: set service-b image to ${IMAGE_TAG}" || echo "No changes to commit"
+          git push
 
