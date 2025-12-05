@@ -18,7 +18,7 @@ spec:
     spec:
       containers:
         - name: service-a
-          image: shradha91103/service-a:8ce9383
+          image: shradha91103/service-a:7efdd10
           imagePullPolicy: IfNotPresent
           ports:
             - containerPort: 80
